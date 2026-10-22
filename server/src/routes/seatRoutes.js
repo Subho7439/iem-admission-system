@@ -5,7 +5,8 @@ const {
   allotSeat,
   getMyAllotment,
   acceptSeat,
-  declineSeat
+  declineSeat,
+  revokeSeat
 } = require('../controllers/seatController');
 const { protect } = require('../middleware/auth');
 const { authorizeRoles } = require('../middleware/roleAuth');
@@ -19,5 +20,7 @@ router.post('/decline', protect, authorizeRoles(ROLES.STUDENT), declineSeat);
 // Admin seat inventory and allocation management
 router.get('/programme/:programmeId', protect, authorizeRoles(ROLES.ADMIN), getProgrammeSeats);
 router.post('/allot', protect, authorizeRoles(ROLES.ADMIN), allotSeat);
+router.post('/revoke', protect, authorizeRoles(ROLES.ADMIN), revokeSeat);
+
 
 module.exports = router;

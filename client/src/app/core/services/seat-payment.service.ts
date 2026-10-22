@@ -71,6 +71,19 @@ export class SeatPaymentService {
     }>(`${this.seatsUrl}/allot`, { applicationId, category, deadlineDays });
   }
 
+  revokeSeat(payload: { seatId?: string; applicationId?: string; reason?: string }): Observable<{
+    success: boolean;
+    message: string;
+    seat: Seat;
+  }> {
+    return this.http.post<{
+      success: boolean;
+      message: string;
+      seat: Seat;
+    }>(`${this.seatsUrl}/revoke`, payload);
+  }
+
+
   // Payment
   createPaymentOrder(allocationId: string, paymentMethod: string = 'NetBanking_Demo'): Observable<{
     success: boolean;

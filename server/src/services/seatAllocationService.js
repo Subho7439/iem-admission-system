@@ -181,6 +181,102 @@ class SeatAllocationService {
 
     return allocation;
   }
+
+  /**
+   * Revoke / Take back seat allotment by Administrator (e.g. allocated by mistake)
+   */
+  async revokeSeat({ seatId, applicationId, reason = '', actorId = null, actorName = 'Administrator' }) {
+    let seat = null;
+    let allocation = null;
+
+    if (seatId) {
+      seat = await Seat.findById(seatId).populate('allottedTo');
+    }
+
+    if (!seat && applicationId) {
+      allocation = await SeatAllocation.findOne({
+        application: applicationId,
+        status: { $in: [SEAT_STATUS.ALLOTTED, SEAT_STATUS.ACCEPTED] }
+      }).populate('seat application student programme');
+      if (allocation) seat = allocation.seat;
+    }
+
+    if (!seat) {
+      throw new Error('Seat not found');
+    }
+
+    // Find active allocation associated with this seat if not already loaded
+    if (!allocation) {
+      allocation = await SeatAllocation.findOne({
+        seat: seat._id,
+        status: { $in: [SEAT_STATUS.ALLOTTED, SEAT_STATUS.ACCEPTED] }
+      }).populate('application student programme');
+    }
+
+    const previousSeatIdentifier = seat.seatIdentifier;
+
+    // Release the seat back to Available
+    seat.status = SEAT_STATUS.AVAILABLE;
+    seat.allottedTo = null;
+    seat.allottedAt = null;
+    await seat.save();
+
+    // If an allocation was associated with this seat
+    if (allocation) {
+      const app = await Application.findById(allocation.application._id);
+      if (app) {
+        // Return application back to Merit Listed or Eligible so candidate is not disqualified
+        app.status = app.meritPosition ? APPLICATION_STATUS.MERIT_LISTED : APPLICATION_STATUS.ELIGIBLE;
+        await app.save();
+      }
+
+      // If there was a pending payment, cancel it
+      const Payment = require('../models/Payment');
+      await Payment.updateMany(
+        { allocation: allocation._id, status: { $in: ['Pending', 'Not Initiated'] } },
+        { status: 'Cancelled', failureReason: 'Seat allotment revoked by administration' }
+      );
+
+      // Cleanly delete the allocation record so the candidate can be allotted again in subsequent rounds
+      await SeatAllocation.findByIdAndDelete(allocation._id);
+
+      // Notify candidate in-app
+      if (allocation.student) {
+        await notificationService.notify({
+          recipientId: allocation.student._id,
+          title: 'Seat Allotment Revoked by Administration',
+          message: `Your provisional allotment for seat ${previousSeatIdentifier} has been revoked by the Admissions Directorate. Reason: ${reason || 'Administrative correction'}. Your application remains eligible for subsequent rounds.`,
+          type: 'SEAT_REVOKED',
+          applicationId: app?.applicationId || '',
+          link: '/student/dashboard'
+        });
+      }
+    }
+
+    // Record in Audit Log
+    try {
+      const AuditLog = require('../models/AuditLog');
+      await AuditLog.create({
+        actor: actorId,
+        actorName: actorName || 'Administrator',
+        actorRole: 'admin',
+        action: 'REVOKE_SEAT_ALLOTMENT',
+        entity: 'Seat',
+        entityId: previousSeatIdentifier,
+        details: {
+          seatId: seat._id,
+          seatIdentifier: previousSeatIdentifier,
+          reason: reason || 'Administrative correction: Allocated by mistake',
+          previousAllocationId: allocation?._id
+        }
+      });
+    } catch (auditErr) {
+      console.warn(`[AuditLog] Warning recording seat revocation: ${auditErr.message}`);
+    }
+
+    return { seat, allocation };
+  }
 }
 
 module.exports = new SeatAllocationService();
+

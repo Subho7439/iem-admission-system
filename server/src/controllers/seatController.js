@@ -258,10 +258,42 @@ const declineSeat = async (req, res, next) => {
   }
 };
 
+/**
+ * @desc    Revoke / Take back seat allotment by Administrator (e.g. allocated by mistake)
+ * @route   POST /api/seats/revoke
+ * @access  Private (Admin)
+ */
+const revokeSeat = async (req, res, next) => {
+  try {
+    const { seatId, applicationId, reason } = req.body;
+    if (!seatId && !applicationId) {
+      return res.status(400).json({ success: false, message: 'seatId or applicationId is required' });
+    }
+
+    const result = await seatAllocationService.revokeSeat({
+      seatId,
+      applicationId,
+      reason,
+      actorId: req.user._id,
+      actorName: req.user.name
+    });
+
+    res.status(200).json({
+      success: true,
+      message: `Seat ${result.seat.seatIdentifier} has been successfully revoked and released back to available inventory.`,
+      seat: result.seat
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getProgrammeSeats,
   allotSeat,
   getMyAllotment,
   acceptSeat,
-  declineSeat
+  declineSeat,
+  revokeSeat
 };
+
