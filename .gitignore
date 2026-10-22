@@ -20,9 +20,12 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Uploads directory files (keep folder intact)
-server/uploads/test_sample*
-server/uploads/demo*
+# Uploads directory runtime files (keep folders intact)
+server/uploads/*
+!server/uploads/.gitkeep
+!server/uploads/receipts/
+server/uploads/receipts/*
+!server/uploads/receipts/.gitkeep
 
 # IDE & OS Metadata
 .vscode/
