@@ -1,0 +1,27 @@
+{
+  "name": "iem-admission-system-root",
+  "version": "1.0.0",
+  "description": "IEM Admission Management System - MEAN Stack Web Application",
+  "scripts": {
+    "install:server": "cd server && npm install",
+    "install:client": "cd client && npm install",
+    "build:client": "cd client && npm run build",
+    "build": "cd server && npm install && cd ../client && npm install && npm run build",
+    "start": "cd server && npm start",
+    "seed": "cd server && npm run seed",
+    "test": "cd server && npm test"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "mean-stack",
+    "angular",
+    "nodejs",
+    "express",
+    "mongodb",
+    "iem-admission-system"
+  ],
+  "author": "IEM SE Lab PCC-CS504 Team",
+  "license": "ISC"
+}

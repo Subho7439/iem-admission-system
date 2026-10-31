@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap, catchError, throwError } from 'rxjs';
 import { User, UserRole } from '../../models/models';
+import { environment } from '../../../environments/environment';
 
 interface AuthResponse {
   success: boolean;
@@ -17,7 +18,7 @@ interface AuthResponse {
 export class AuthService {
   private http = inject(HttpClient);
   private router = inject(Router);
-  private apiUrl = 'http://localhost:5000/api/auth';
+  private apiUrl = `${environment.apiUrl}/auth`;
 
   currentUser = signal<User | null>(null);
   token = signal<string | null>(null);

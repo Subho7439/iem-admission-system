@@ -302,7 +302,44 @@ Additional detailed technical documentation is available in the [`docs/`](./docs
 
 ---
 
-## 11. Authors & Lab Credits
+## 11. Cloud Deployment Guide (Render + MongoDB Atlas)
+
+The project is fully configured for one-click deployment on **Render** (as a unified full-stack MEAN web service serving the Angular frontend and Node.js REST API together).
+
+### Step 1: Set Up Free Cloud MongoDB (MongoDB Atlas)
+1. Sign up / Log in to [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).
+2. Create a free **M0 Shared Cluster** (AWS / any region).
+3. Under **Security &rarr; Database Access**, create a user (e.g. `iem_admin`) and password.
+4. Under **Security &rarr; Network Access**, add IP `0.0.0.0/0` (Allow access from anywhere).
+5. Click **Connect &rarr; Drivers (Node.js)** and copy your connection string:
+   ```text
+   mongodb+srv://iem_admin:<password>@cluster0.xxxxx.mongodb.net/iem_admission_db?retryWrites=true&w=majority
+   ```
+
+### Step 2: Deploy on Render
+1. Sign in to [Render Dashboard](https://dashboard.render.com).
+2. Click **New + &rarr; Web Service**.
+3. Connect your GitHub repository: `Subho7439/iem-admission-system`.
+4. Configure the settings:
+   - **Name:** `iem-admission-system`
+   - **Environment:** `Node`
+   - **Branch:** `main`
+   - **Build Command:** `npm run build`
+   - **Start Command:** `npm start`
+5. Under **Environment Variables**, add:
+   - `NODE_ENV` = `production`
+   - `MONGODB_URI` = `mongodb+srv://iem_admin:<password>@cluster0.xxxxx.mongodb.net/iem_admission_db?retryWrites=true&w=majority`
+   - `JWT_SECRET` = `iem_admission_jwt_secret_render_production_2026`
+6. Click **Deploy Web Service**!
+7. Once deployed, open the **Shell** tab in Render and run:
+   ```bash
+   npm run seed
+   ```
+   This will immediately initialize all sample courses, seats, demo applicants, and admin credentials on your live cloud database!
+
+---
+
+## 12. Authors & Lab Credits
 
 - **Course:** Software Engineering and Project Management Laboratory (PCC-CS504)
 - **Institution:** Department of Computer Science & Engineering, Institute of Engineering & Management, Kolkata

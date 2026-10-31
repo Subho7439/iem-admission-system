@@ -2,14 +2,15 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AdmissionProgramme } from '../../models/models';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AdminService {
   private http = inject(HttpClient);
-  private adminUrl = 'http://localhost:5000/api/admin';
-  private reportsUrl = 'http://localhost:5000/api/reports';
+  private adminUrl = `${environment.apiUrl}/admin`;
+  private reportsUrl = `${environment.apiUrl}/reports`;
 
   getDashboardStats(): Observable<any> {
     return this.http.get(`${this.adminUrl}/dashboard-stats`);

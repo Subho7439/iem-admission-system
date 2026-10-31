@@ -2,13 +2,14 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { MeritConfiguration, MeritEntry, AdmissionProgramme } from '../../models/models';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MeritService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:5000/api/merit';
+  private apiUrl = `${environment.apiUrl}/merit`;
 
   getConfig(programmeId: string, cycle: string = '2026-2027'): Observable<{ success: boolean; config: MeritConfiguration }> {
     return this.http.get<{ success: boolean; config: MeritConfiguration }>(

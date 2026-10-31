@@ -18,7 +18,7 @@ const pdfService = require('../services/pdfService');
 const { ROLES, APPLICATION_STATUS, DOCUMENT_STATUS, SEAT_STATUS, PAYMENT_STATUS, DOCUMENT_TYPES } = require('../config/constants');
 
 const connectDB = async () => {
-  const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/iem_admission_db';
+  const uri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/iem_admission_db';
   return await mongoose.connect(uri);
 };
 

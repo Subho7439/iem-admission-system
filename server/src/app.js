@@ -3,6 +3,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const path = require('path');
+const fs = require('fs');
 const errorHandler = require('./middleware/errorHandler');
 
 // Route imports
@@ -21,6 +22,7 @@ const app = express();
 
 // Security HTTP headers
 app.use(helmet({
+  contentSecurityPolicy: false,
   crossOriginResourcePolicy: { policy: 'cross-origin' }
 }));
 
@@ -75,6 +77,9 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/reports', reportRoutes);
 
+// Static uploads directory
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+
 // 404 handler for unknown API routes
 app.use('/api/*', (req, res) => {
   res.status(404).json({
@@ -82,6 +87,18 @@ app.use('/api/*', (req, res) => {
     message: `API endpoint '${req.originalUrl}' not found`
   });
 });
+
+// Serve Angular frontend in production
+const clientDistPath = path.join(__dirname, '../../client/dist/client/browser');
+if (fs.existsSync(clientDistPath)) {
+  app.use(express.static(clientDistPath));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+      return next();
+    }
+    res.sendFile(path.join(clientDistPath, 'index.html'));
+  });
+}
 
 // Global error handler
 app.use(errorHandler);

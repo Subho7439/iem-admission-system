@@ -2,15 +2,16 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { SeatAllocation, Seat, Payment, Receipt } from '../../models/models';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SeatPaymentService {
   private http = inject(HttpClient);
-  private seatsUrl = 'http://localhost:5000/api/seats';
-  private paymentsUrl = 'http://localhost:5000/api/payments';
-  private receiptsUrl = 'http://localhost:5000/api/receipts';
+  private seatsUrl = `${environment.apiUrl}/seats`;
+  private paymentsUrl = `${environment.apiUrl}/payments`;
+  private receiptsUrl = `${environment.apiUrl}/receipts`;
 
   // Seat Allotment
   getMyAllotment(): Observable<{
