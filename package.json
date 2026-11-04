@@ -12,8 +12,8 @@
     "test": "cd server && npm test"
   },
   "engines": {
-  "node": "22.x"
-},
+    "node": "22.x"
+  },
   "keywords": [
     "mean-stack",
     "angular",
@@ -23,5 +23,8 @@
     "iem-admission-system"
   ],
   "author": "IEM SE Lab PCC-CS504 Team",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^18.0.9"
+  }
 }
