@@ -6,14 +6,14 @@
     "install:server": "cd server && npm install",
     "install:client": "cd client && npm install",
     "build:client": "cd client && npm run build",
-    "build": "cd server && npm install && cd ../client && npm install && npm run build",
+    "build": "cd server && npm install && cd ../client && npm install --include=dev && npm run build",
     "start": "cd server && npm start",
     "seed": "cd server && npm run seed",
     "test": "cd server && npm test"
   },
   "engines": {
-    "node": ">=18.0.0"
-  },
+  "node": "22.x"
+},
   "keywords": [
     "mean-stack",
     "angular",
