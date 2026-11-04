@@ -90,7 +90,7 @@ app.use('/api/*', (req, res) => {
 
 // Serve Angular frontend in production
 //const clientDistPath = path.join(__dirname, '../../client/dist/client/browser');
-const clientDistPath = path.join(__dirname, '../../client/dist/client');
+const clientDistPath = path.join(__dirname, '../../client/dist/client/browser');
 if (fs.existsSync(clientDistPath)) {
   app.use(express.static(clientDistPath));
   app.get('*', (req, res, next) => {
